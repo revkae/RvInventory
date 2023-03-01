@@ -15,7 +15,7 @@ public class RvRow {
     private List<ItemStack> row;
 
     public RvRow() {
-        row = new ArrayList<>();
+        row = new ArrayList<>(Collections.nCopies(9, new ItemStack(Material.AIR)));
     }
 
     public RvRow(ItemStack... items) {
@@ -54,12 +54,11 @@ public class RvRow {
         return this;
     }
 
-    public List<ItemStack> getItems() {
-        return row;
-    }
-
     public ItemStack getItem(int index) {
         return row.get(index);
+    }
+    public List<ItemStack> getItems() {
+        return row;
     }
 
     public List<ItemStack> getItems(int... index) {
@@ -69,8 +68,44 @@ public class RvRow {
         return items;
     }
 
+    public boolean contains(ItemStack itemStack) {
+        return row.contains(itemStack);
+    }
+
+    public boolean isEmpty(int index) {
+        return row.get(index).getType() == Material.AIR;
+    }
+
+    public boolean isEmpty() {
+        List<ItemStack> items = row.stream()
+                .filter(item -> item.getType() != Material.AIR)
+                .collect(Collectors.toList());
+        return items.isEmpty();
+    }
+
+    public boolean isFull(int index) {
+        return row.get(index).getType() != Material.AIR;
+    }
+
+    public boolean isFull() {
+        List<ItemStack> items = row.stream()
+                .filter(item -> item.getType() == Material.AIR)
+                .collect(Collectors.toList());
+        return items.isEmpty();
+    }
+
     public RvRow fillOut(ItemStack itemStack) {
         Collections.fill(row, itemStack);
+        return this;
+    }
+
+    public RvRow setRow(RvRow newRow) {
+        this.row = newRow.getItems();
+        return this;
+    }
+
+    public RvRow setRow(List<ItemStack> newRow) {
+        this.row = newRow;
         return this;
     }
 

@@ -10,6 +10,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RvInventory {
 
@@ -37,10 +38,10 @@ public class RvInventory {
         this.rowAmount = inventory.getSize() / columnAmount;
     }
 
-    public RvInventory removeRow(int i) {
-        if (i > rowAmount || i < 0) return this;
+    public RvInventory removeRow(int index) {
+        if (index > rowAmount || index < 0) return this;
 
-        int startSlot = i * columnAmount;
+        int startSlot = index * columnAmount;
         int endSlot = startSlot + columnAmount;
 
         int num = 0;
@@ -51,10 +52,17 @@ public class RvInventory {
         return this;
     }
 
-    public RvInventory setRow(int i, RvRow row) {
-        if (i > rowAmount || i < 0) return this;
+    public RvInventory removeRows(int... indexes) {
+        for (int index : indexes) {
+            removeRow(index);
+        }
+        return this;
+    }
 
-        int startSlot = i * columnAmount;
+    public RvInventory setRow(int index, RvRow row) {
+        if (index > rowAmount || index < 0) return this;
+
+        int startSlot = index * columnAmount;
         int endSlot = startSlot + columnAmount;
 
         int num = 0;
@@ -65,10 +73,17 @@ public class RvInventory {
         return this;
     }
 
-    public RvInventory removeColumn(int i) {
-        if (columnAmount < i || i < 0) return this;
+    public RvInventory setRows(RvRow row, int... indexes) {
+        for (int index : indexes) {
+            setRow(index, row);
+        }
+        return this;
+    }
 
-        int startSlot = i;
+    public RvInventory removeColumn(int index) {
+        if (columnAmount < index || index < 0) return this;
+
+        int startSlot = index;
         int endSlot = rowAmount * columnAmount;
         int num = 0;
         for (int j = startSlot; j < endSlot; j+=9) {
@@ -78,10 +93,17 @@ public class RvInventory {
         return this;
     }
 
-    public RvInventory setColumn(int i, RvColumn column) {
-        if (columnAmount < i || i < 0) return this;
+    public RvInventory removeColumns(int... indexes) {
+        for (int index : indexes) {
+            removeColumn(index);
+        }
+        return this;
+    }
 
-        int startSlot = i;
+    public RvInventory setColumn(int index, RvColumn column) {
+        if (columnAmount < index || index < 0) return this;
+
+        int startSlot = index;
         int endSlot = rowAmount * columnAmount;
         int num = 0;
         for (int j = startSlot; j < endSlot; j+=9) {
@@ -91,10 +113,17 @@ public class RvInventory {
         return this;
     }
 
-    public RvRow getRow(int i) {
-        if (rowAmount < i || i < 0) return null;
+    public RvInventory setColumns(RvColumn column, int... indexes) {
+        for (int index : indexes) {
+            setColumn(index, column);
+        }
+        return this;
+    }
+
+    public RvRow getRow(int index) {
+        if (rowAmount < index || index < 0) return null;
         RvRow rvRow = new RvRow();
-        int startSlot = i * columnAmount;
+        int startSlot = index * columnAmount;
         int endSlot = startSlot + columnAmount;
         int num = 0;
         for (int j = startSlot; j < endSlot; j++) {
@@ -104,10 +133,14 @@ public class RvInventory {
         return rvRow;
     }
 
-    public RvColumn getColumn(int i) {
-        if (columnAmount < i || i < 0) return null;
+    public List<RvRow> getRows(int... indexes) {
+        return Arrays.stream(indexes).mapToObj(this::getRow).collect(Collectors.toList());
+    }
+
+    public RvColumn getColumn(int index) {
+        if (columnAmount < index || index < 0) return null;
         RvColumn rvColumn = new RvColumn();
-        int startSlot = i;
+        int startSlot = index;
         int endSlot = rowAmount * columnAmount;
         int num = 0;
         for (int j = startSlot; j < endSlot; j+=9) {
@@ -117,10 +150,14 @@ public class RvInventory {
         return rvColumn;
     }
 
-    public boolean isRowEmpty(int i) {
-        if (rowAmount < i || i < 0) return false;
+    public List<RvColumn> getColumns(int... indexes) {
+        return Arrays.stream(indexes).mapToObj(this::getColumn).collect(Collectors.toList());
+    }
 
-        int startSlot = i * columnAmount;
+    public boolean isRowEmpty(int index) {
+        if (rowAmount < index || index < 0) return false;
+
+        int startSlot = index * columnAmount;
         int endSlot = startSlot + columnAmount;
 
         boolean found = false;
@@ -133,10 +170,17 @@ public class RvInventory {
         return !found;
     }
 
-    public boolean isColumnEmpty(int i) {
-        if (rowAmount < i || i < 0) return false;
+    public boolean isRowsEmpty(int... indexes) {
+        for (int index : indexes) {
+            if (!isRowEmpty(index)) return false;
+        }
+        return true;
+    }
 
-        int startSlot = i;
+    public boolean isColumnEmpty(int index) {
+        if (rowAmount < index || index < 0) return false;
+
+        int startSlot = index;
         int endSlot = rowAmount * columnAmount;
 
         boolean found = false;
@@ -147,6 +191,13 @@ public class RvInventory {
         }
 
         return !found;
+    }
+
+    public boolean isColumnsEmpty(int... indexes) {
+        for (int index : indexes) {
+            if (!isColumnEmpty(index)) return false;
+        }
+        return true;
     }
 
     public RvInventory setTitle(String title) {

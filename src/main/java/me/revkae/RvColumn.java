@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RvColumn {
 
     private List<ItemStack> column;
 
     public RvColumn() {
-        column = new ArrayList<>();
+        column = new ArrayList<>(Collections.nCopies(9, new ItemStack(Material.AIR)));
     }
 
     public RvColumn(ItemStack... items) {
@@ -33,10 +34,6 @@ public class RvColumn {
         for (Pair<Integer, ItemStack> item : items) {
             column.set(item.getValue0(), item.getValue1());
         }
-    }
-
-    public ItemStack getItem(int index) {
-        return column.get(index);
     }
 
     public RvColumn setItem(int index, ItemStack itemStack) {
@@ -58,12 +55,59 @@ public class RvColumn {
         return this;
     }
 
+    public ItemStack getItem(int index) {
+        return column.get(index);
+    }
+
     public List<ItemStack> getItems() {
         return column;
     }
 
+    public List<ItemStack> getItems(int... index) {
+        List<ItemStack> items = Arrays.stream(index)
+                .mapToObj(column::get)
+                .collect(Collectors.toList());
+        return items;
+    }
+
+    public boolean contains(ItemStack itemStack) {
+        return column.contains(itemStack);
+    }
+
+    public boolean isEmpty(int index) {
+        return column.get(index).getType() == Material.AIR;
+    }
+
+    public boolean isEmpty() {
+        List<ItemStack> items = column.stream()
+                .filter(item -> item.getType() != Material.AIR)
+                .collect(Collectors.toList());
+        return items.isEmpty();
+    }
+
+    public boolean isFull(int index) {
+        return column.get(index).getType() != Material.AIR;
+    }
+
+    public boolean isFull() {
+        List<ItemStack> items = column.stream()
+                .filter(item -> item.getType() == Material.AIR)
+                .collect(Collectors.toList());
+        return items.isEmpty();
+    }
+
     public RvColumn fillOut(ItemStack itemStack) {
         Collections.fill(column, itemStack);
+        return this;
+    }
+
+    public RvColumn setRow(RvColumn newRow) {
+        this.column = newRow.getItems();
+        return this;
+    }
+
+    public RvColumn setRow(List<ItemStack> newRow) {
+        this.column = newRow;
         return this;
     }
 
