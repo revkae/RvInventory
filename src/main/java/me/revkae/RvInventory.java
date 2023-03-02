@@ -214,6 +214,16 @@ public class RvInventory {
         return this;
     }
 
+    public RvInventory fillOut(ItemStack itemStack, int... indexes) {
+        List<ItemStack> content = new ArrayList<>(Arrays.asList(getContents()));
+        Collections.fill(content, itemStack);
+        setContents((ItemStack[]) content.toArray());
+        for (int index : indexes) {
+            setItem(index, new ItemStack(Material.AIR));
+        }
+        return this;
+    }
+
     public RvInventory setItem(ItemStack itemStack, int... indexes) {
         for (int index : indexes) {
             setItem(index, itemStack);
@@ -221,12 +231,25 @@ public class RvInventory {
         return this;
     }
 
+    public void setLayout(RvLayout layout) {
+        inventory.clear();
+        layout.init(this);
+    }
+
     public boolean isEmpty(int slot) {
         return inventory.getItem(slot).getType() == Material.AIR;
     }
 
+    public boolean isFull(int slot) {
+        return inventory.getItem(slot).getType() != Material.AIR;
+    }
+
     public void open(Player player) {
         player.openInventory(inventory);
+    }
+
+    public void close(Player player) {
+        player.closeInventory();
     }
 
     public void update(Player player) {
