@@ -231,13 +231,29 @@ public class RvInventory {
         return this;
     }
 
-    public void setLayout(RvLayout layout) {
+    public RvInventory setItem(int row, int column, ItemStack itemStack) {
+        setItem((row * 9) + column, itemStack);
+        return this;
+    }
+
+    public RvInventory setLayout(RvLayout layout) {
         inventory.clear();
         layout.init(this);
+        return this;
+    }
+
+    public boolean isEmpty() {
+        return Arrays.stream(getContents())
+                .noneMatch(itemStack -> itemStack.getType() != Material.AIR);
     }
 
     public boolean isEmpty(int slot) {
         return inventory.getItem(slot).getType() == Material.AIR;
+    }
+
+    public boolean isFull() {
+        return Arrays.stream(getContents())
+                .noneMatch(itemStack -> itemStack.getType() == Material.AIR);
     }
 
     public boolean isFull(int slot) {
