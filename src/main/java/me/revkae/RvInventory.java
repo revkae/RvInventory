@@ -18,6 +18,11 @@ public class RvInventory {
     private final int rowAmount;
     private final int columnAmount = 9;
 
+    public RvInventory(Inventory inventory) {
+        this.inventory = inventory;
+        this.rowAmount = inventory.getSize() / columnAmount;
+    }
+
     public RvInventory(InventoryHolder holder, InventoryType type) {
         this.inventory = Bukkit.createInventory(holder, type);
         this.rowAmount = inventory.getSize() / columnAmount;
